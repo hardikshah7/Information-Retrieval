@@ -11,14 +11,15 @@ import java.util.Map.Entry;
 public class mypagerank {
 	ArrayList<String> pages = new ArrayList<String>();
 	ArrayList<String> sinknodes = new ArrayList<String>();
-	double perplexity = 0;
-	static HashMap<String, ArrayList<String>> inlinks = new HashMap<String, ArrayList<String>>();
 	HashMap<String, Double> outlinks = new HashMap<String, Double>();
+	static HashMap<String, ArrayList<String>> inlinks = new HashMap<String, ArrayList<String>>();
 	static HashMap<String, Double> pagerank = new HashMap<String, Double>();
 	static HashMap<String, Double> inlinks_count = new HashMap<String, Double>();
+	ArrayList<Double> perplexvalues = new ArrayList<Double>();
 	double dampfactor = 0.85;
 	private int count = 0;
-	ArrayList<Double> perplexvalues = new ArrayList<Double>();
+	double perplexity = 0;
+
 
 	public static void main(String args[]) throws IOException {
 		mypagerank pr = new mypagerank();
@@ -30,11 +31,13 @@ public class mypagerank {
 		pr.sortByValues(inlinks_count);
 	}
 
+// Algorithm to calculate pagerank. Runs until perplexity values converge
 	private void pagerank() {
 		HashMap<String, Double> newpagerank = new HashMap<String, Double>();
 		double plen = pages.size();
 		double sinkpagerank = 0;
 		double H = 0;
+		// Assign Initial pagerank values to all pages
 		for (String page : pages) {
 			pagerank.put(page, (1.0 / plen));
 			H += (pagerank.get(page) * (Math.log(pagerank.get(page)) / Math
@@ -49,13 +52,13 @@ public class mypagerank {
 			//i++;
 			sinkpagerank = 0;
 			for (String page : sinknodes)
-				sinkpagerank += pagerank.get(page);
+				sinkpagerank += pagerank.get(page);	//Calculate total Sink pagerank
 			for (String page : pages) {
-				newpagerank.put(page, ((1 - dampfactor) / plen));
-				newpagerank.put(page, newpagerank.get(page)
+				newpagerank.put(page, ((1 - dampfactor) / plen));	// Teleportation
+				newpagerank.put(page, newpagerank.get(page)		// Spread remaining sink pagerank evenly 
 						+ (dampfactor * sinkpagerank / plen));
-				for (String q : inlinks.get(page)) {
-					newpagerank.put(page, newpagerank.get(page)
+				for (String q : inlinks.get(page)) {			
+					newpagerank.put(page, newpagerank.get(page)	// Add share of pagerank from in-links
 							+ (dampfactor * pagerank.get(q) / outlinks.get(q)));
 				}
 			}
@@ -82,6 +85,7 @@ public class mypagerank {
 		if (perplexvalues.size() < 5)
 			return false;
 		else {
+			// Check for difference between last 4 perplexity values
 			if (Math.abs(perplexvalues.get(0) - perplexvalues.get(1)) < 1
 					&& Math.abs(perplexvalues.get(1) - perplexvalues.get(2)) < 1
 					&& Math.abs(perplexvalues.get(2) - perplexvalues.get(3)) < 1
@@ -102,6 +106,7 @@ public class mypagerank {
 		String p = null;
 		System.out.println("Starting to read file and set variables..");
 		while ((line = br.readLine()) != null) {
+			// Read file and Store the page and inlink page as key:value in HashMap
 			ArrayList<String> templist = new ArrayList<String>();
 			line = line.trim();
 			temp = line.split("\\s+");
@@ -115,6 +120,7 @@ public class mypagerank {
 		}
 		br.close();
 		checklinks();
+		// Populate count of in-links
 		for (String key : inlinks.keySet()) {
 			double link_count = inlinks.get(key).size();
 			inlinks_count.put(key, link_count);
@@ -123,6 +129,7 @@ public class mypagerank {
 	}
 
 	private void checklinks() {
+		// Iterate over inlinks to populate the outlinks count of each page
 		for (String key : inlinks.keySet()) {
 			for (String value : inlinks.get(key)) {
 				if (outlinks.keySet().contains(value)) {
@@ -132,7 +139,7 @@ public class mypagerank {
 				}
 			}
 		}
-
+		// Populate the sink nodes Arraylist by iterating over nodes that have no outlinks.
 		for (String p : pages) {
 			if (!(outlinks.keySet().contains(p))) {
 				if (!sinknodes.contains(p)) {
@@ -141,7 +148,7 @@ public class mypagerank {
 			}
 		}
 	}
-
+	// This method sorts the pagerank and inlinks HashMap.(HashMap are always unsorted)
 	private void sortByValues(HashMap<String, Double> map) {
 		Set<Entry<String, Double>> set = map.entrySet();
 		List<Entry<String, Double>> list = new ArrayList<Entry<String, Double>>(
