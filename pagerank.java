@@ -1,5 +1,7 @@
-//Author: Hardik Shah
-//Date: 10/15/2014
+/* Author: Hardik Shah
+   Course: Information Retrieval
+   Page Ranking algorithm implementation
+*/   
 
 import java.io.BufferedReader;
 import java.io.IOException;
