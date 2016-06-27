@@ -1,5 +1,7 @@
-// Author: Hardik Shah
-// Date: 09/26/2014 
+/* Author: Hardik Shah
+   Course: Information Retrieval
+   Web Crawler implementation
+*/ 
 
 package webcrawler;
 
