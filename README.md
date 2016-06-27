@@ -1,7 +1,8 @@
 Information-Retrieval
 =====================
 
-Projects under Information Retrieval course:
+These are the projects I worked on for my Information Retrieval course:
+Below is the problem statement for Web Crawler and PageRank algorithm.
 
 1. Web Crawler problem description:
     Implement your own web crawler, with the following properties:
